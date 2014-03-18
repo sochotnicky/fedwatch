@@ -1,4 +1,5 @@
 #!/usr/bin/python
+import ConfigParser
 import logging
 from logging.handlers import SysLogHandler
 import os
@@ -35,12 +36,18 @@ def termhandler(signum, frame):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Run tasks on fedmsg changes',
 				     formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser.add_argument('--config-file', default='/etc/fedwatch.conf',
+                        help='Configuration file for topic selection and data mapping')
     parser.add_argument('--script-dir', default='/etc/fedwatch.d',
                         help='Directory with scripts to run for fedmsg messages')
     parser.add_argument('--debug', action='store_true',
                         help='Run with debug output')
 
     args = parser.parse_args()
+    scp = ConfigParser.SafeConfigParser()
+    if scp.read(args.config_file) != [args.config_file]:
+        parser.error("Unable to load configuration file {conf}".format(
+            conf=args.config_file))
     configure_logger()
     if args.debug:
         log.setLevel(logging.DEBUG)
@@ -49,19 +56,11 @@ if __name__ == "__main__":
     log.info("started")
     signal.signal(signal.SIGTERM, termhandler)
     try:
-        fw = fedwatch.FedWatch({
-            'org.fedoraproject.prod.git.receive':[
-                getinfo('username'),
-                getinfo('repo'),
-                getinfo('branch'),
-                getinfo('rev'),
-                getinfo('summary'),
-                fedmsg.meta.msg2link],
-            'org.fedoraproject.prod.buildsys.repo.done':[
-                'tag',
-                'instance',
-                fedmsg.meta.msg2link]},
-            args.script_dir)
+        confdict = {}
+        for section in scp.sections():
+            confdict[section] = scp.get(section, 'args').split(',')
+        log.debug("Configuration dict: {conf}".format(conf=confdict))
+        fw = fedwatch.FedWatch(confdict, args.script_dir)
         fw.watch()
     except KeyboardInterrupt:
         log.info("finishing up")
