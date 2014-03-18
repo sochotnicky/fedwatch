@@ -14,6 +14,7 @@ setup(
     version = __version__,
     license = 'LGPLv2+',
     py_modules = ['fedwatch'],
+    scripts = ['fedwatch-cli'],
     maintainer  = 'Stanislav Ochotnicky',
     maintainer_email = 'sochotnicky@redhat.com'
 )
