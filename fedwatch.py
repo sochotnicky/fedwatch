@@ -90,5 +90,5 @@ class FedWatch(object):
                             path, val = dpath.util.search(msg, parg, yielded=True).next()
                             pargs.append(val)
                         elif parg in data:
-                            pargs.append(data[parg])
+                            pargs.append(msg[parg])
                     self.__run_scripts(self.script_dir, pargs)
