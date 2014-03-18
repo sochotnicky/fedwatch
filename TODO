@@ -1,0 +1,2 @@
+* better error handling of incorrect config file
+* better error handling of bad path to data
