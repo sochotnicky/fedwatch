@@ -58,7 +58,10 @@ if __name__ == "__main__":
     try:
         confdict = {}
         for section in scp.sections():
-            confdict[section] = scp.get(section, 'args').split(',')
+            alist = []
+            for key, arg in scp.items(section):
+                alist.append(arg)
+            confdict[section] = alist
         log.debug("Configuration dict: {conf}".format(conf=confdict))
         fw = fedwatch.FedWatch(confdict, args.script_dir)
         fw.watch()
