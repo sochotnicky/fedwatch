@@ -26,6 +26,8 @@ import os
 import logging
 import subprocess
 
+import dpath
+import dpath.util
 import fedmsg
 import fedmsg.meta
 import fedmsg.config
@@ -83,6 +85,10 @@ class FedWatch(object):
                         if hasattr(parg, '__call__'):
                             # run this as fedmsg.meta function
                             pargs.append(parg(msg, **config))
+                        elif '/' in parg:
+                            # this is a dpath expression
+                            path, val = dpath.util.search(msg, parg, yielded=True).next()
+                            pargs.append(val)
                         elif parg in data:
                             pargs.append(data[parg])
                     self.__run_scripts(self.script_dir, pargs)
