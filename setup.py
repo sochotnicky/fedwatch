@@ -19,4 +19,13 @@ setup(
     download_url = 'https://pypi.python.org/pypi/fedwatch',
     maintainer  = 'Stanislav Ochotnicky',
     maintainer_email = 'sochotnicky@redhat.com'
+    classifiers = [
+        'Development Status :: 4 - Beta',
+        'Intended Audience :: Developers',
+        'Intended Audience :: System Administrators',
+        'License :: OSI Approved :: GNU Lesser General Public License v2 or later (LGPLv2+)',
+        'Programming Language :: Python :: 2 :: Only', # due to fedmsg dep
+        'Topic :: System :: Monitoring',
+        'Topic :: System :: Systems Administration',
+        'Topic :: Utilities',
 )
