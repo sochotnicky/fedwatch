@@ -15,6 +15,8 @@ setup(
     license = 'LGPLv2+',
     py_modules = ['fedwatch'],
     scripts = ['bin/fedwatch'],
+    url = 'https://github.com/sochotnicky/fedwatch',
+    download_url = 'https://pypi.python.org/pypi/fedwatch',
     maintainer  = 'Stanislav Ochotnicky',
     maintainer_email = 'sochotnicky@redhat.com'
 )
