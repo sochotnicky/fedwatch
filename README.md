@@ -6,6 +6,11 @@ Library for watching fedmsg messages and running arbitrary scripts in a nice way
 Think of fedwatch as simple converter from fedmsg json messages into shell
 arguments for scripts. 
 
+Dependencies
+============
+* fedmsg (duh!)
+* python-dpath (https://github.com/akesterson/dpath-python)
+
 Usage
 =====
 
