@@ -1,0 +1,11 @@
+# systemd unit file for fedwatch
+
+[Unit]
+Description=Service for running arbitrary scripts on fedmsg events
+After=syslog.target network.target
+
+[Service]
+ExecStart=/usr/bin/fedwatch
+
+[Install]
+WantedBy=multi-user.target
