@@ -2,7 +2,7 @@
 #
 # fedwatch daemon to watch for fedmsg messages and run arbitrary scripts
 #
-# chkconfig:   80 90
+# chkconfig: - 80 20
 # description: daemon to watch fedmsg messages and run arbitrary scripts
 
 # Source function library.
