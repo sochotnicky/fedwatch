@@ -18,7 +18,7 @@ setup(
     url = 'https://github.com/sochotnicky/fedwatch',
     download_url = 'https://pypi.python.org/pypi/fedwatch',
     maintainer  = 'Stanislav Ochotnicky',
-    maintainer_email = 'sochotnicky@redhat.com'
+    maintainer_email = 'sochotnicky@redhat.com',
     classifiers = [
         'Development Status :: 4 - Beta',
         'Intended Audience :: Developers',
@@ -27,5 +27,6 @@ setup(
         'Programming Language :: Python :: 2 :: Only', # due to fedmsg dep
         'Topic :: System :: Monitoring',
         'Topic :: System :: Systems Administration',
-        'Topic :: Utilities',
+        'Topic :: Utilities'
+        ]
 )
