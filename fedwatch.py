@@ -20,7 +20,7 @@ Module for watching fedmsg messages and running scripts based on those messages
     Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
     USA
 """
-__version__='0.2'
+__version__='0.3'
 
 import os
 import logging
