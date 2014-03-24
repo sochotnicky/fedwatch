@@ -46,13 +46,13 @@ if __name__ == "__main__":
     args = parser.parse_args()
     scp = ConfigParser.SafeConfigParser()
     if scp.read(args.config_file) != [args.config_file]:
-        parser.error("Unable to load configuration file {conf}".format(
+        parser.error("unable to load configuration file {conf}".format(
             conf=args.config_file))
     configure_logger()
     if args.debug:
         log.setLevel(logging.DEBUG)
     if not os.path.isdir(args.script_dir):
-        parser.error("Script directory {d} is missing".format(d=args.script_dir))
+        parser.error("script directory {d} is missing".format(d=args.script_dir))
     log.info("started")
     signal.signal(signal.SIGTERM, termhandler)
     try:
@@ -62,10 +62,11 @@ if __name__ == "__main__":
             for key, arg in scp.items(section):
                 alist.append(arg)
             confdict[section] = alist
-        log.debug("Configuration dict: {conf}".format(conf=confdict))
+        log.debug("configuration dict: {conf}".format(conf=confdict))
         fw = fedwatch.FedWatch(confdict, args.script_dir)
         fw.watch()
     except KeyboardInterrupt:
         log.info("finishing up")
     except Exception, e:
         log.error("runtime exception: {e}".format(e=e))
+        raise e
