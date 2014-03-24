@@ -87,8 +87,13 @@ class FedWatch(object):
                             pargs.append(parg(msg, **config))
                         elif '/' in parg:
                             # this is a dpath expression
-                            path, val = dpath.util.search(msg, parg, yielded=True).next()
-                            pargs.append(val)
+                            try:
+                                path, val = dpath.util.search(msg, parg, yielded=True).next()
+                                pargs.append(val)
+                            except StopIteration:
+                                log.warning("Path {parg} does not exist in {topic}. Substituting empty string"
+                                .format(parg=parg, topic=topic))
+                                pargs.append('')
                         elif parg in data:
                             pargs.append(msg[parg])
                     self.__run_scripts(self.script_dir, pargs)
