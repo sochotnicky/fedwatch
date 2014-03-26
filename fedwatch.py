@@ -81,7 +81,7 @@ class FedWatch(object):
                     log.debug("match topic {topic}=>{data}".format(topic=topic,
                                                                   data=data))
                     pargs = [topic]
-                    for parg in self.topics[watchtop]:
+                    for parg in self.topics[watchtop]['args']:
                         if hasattr(parg, '__call__'):
                             # run this as fedmsg.meta function
                             pargs.append(parg(msg, **config))

@@ -1,9 +1,11 @@
 #!/usr/bin/python
 import ConfigParser
+import json
 import logging
 from logging.handlers import SysLogHandler
 import os
 import signal
+import sys
 
 import argparse
 import fedmsg
@@ -23,6 +25,51 @@ def configure_logger():
     log.addHandler(cl)
     log.addHandler(sl)
     return log
+
+def convert_config(config_file, scp):
+    confdict = {}
+    for section in scp.sections():
+        alist = []
+        for key, arg in scp.items(section):
+            alist.append(arg)
+        confdict[section] = {'args':alist}
+    try:
+        cf = open(config_file, "w")
+        try:
+            json.dump(confdict, cf, indent=4)
+        finally:
+            cf.close()
+    except IOError, e:
+        log.error("conversion of configuration failed: {e}".format(
+            e=e))
+        sys.exit(1)
+
+
+
+def read_config(config_file):
+    scp = ConfigParser.SafeConfigParser()
+    confdict = {}
+    try:
+        scp.read(config_file)
+        log.warning("converting configuration {conf} to json format".format(
+            conf=config_file))
+        convert_config(config_file, scp)
+    except ConfigParser.MissingSectionHeaderError, e:
+        # happens when file is already converted
+        pass
+
+    try:
+        cf = open(config_file, "r")
+        try:
+            confdict = json.load(cf)
+        finally:
+            cf.close()
+    except IOError, e:
+        log.error("loading of configuration failed: {e}".format(
+            e=e))
+        sys.exit(1)
+    return confdict
+
 
 def getinfo(name):
     def g(msg, **config):
@@ -44,11 +91,9 @@ if __name__ == "__main__":
                         help='Run with debug output')
 
     args = parser.parse_args()
-    scp = ConfigParser.SafeConfigParser()
-    if scp.read(args.config_file) != [args.config_file]:
-        parser.error("unable to load configuration file {conf}".format(
-            conf=args.config_file))
+    confdict = read_config(args.config_file)
     configure_logger()
+
     if args.debug:
         log.setLevel(logging.DEBUG)
     if not os.path.isdir(args.script_dir):
@@ -56,12 +101,6 @@ if __name__ == "__main__":
     log.info("started")
     signal.signal(signal.SIGTERM, termhandler)
     try:
-        confdict = {}
-        for section in scp.sections():
-            alist = []
-            for key, arg in scp.items(section):
-                alist.append(arg)
-            confdict[section] = alist
         log.debug("configuration dict: {conf}".format(conf=confdict))
         fw = fedwatch.FedWatch(confdict, args.script_dir)
         fw.watch()
