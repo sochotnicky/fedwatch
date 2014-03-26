@@ -96,4 +96,9 @@ class FedWatch(object):
                                 pargs.append('')
                         elif parg in msg:
                             pargs.append(msg[parg])
+                        else:
+                            log.warning("Path {parg} does not exist in {topic}. Substituting empty string"
+                                       .format(parg=parg, topic=topic))
+                            pargs.append('')
+
                     self.__run_scripts(self.script_dir, pargs)
