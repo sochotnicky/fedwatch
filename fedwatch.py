@@ -22,8 +22,10 @@ Module for watching fedmsg messages and running scripts based on those messages
 """
 __version__='0.4'
 
+import errno
 import os
 import logging
+import stat
 import subprocess
 
 import dpath
@@ -32,6 +34,10 @@ import fedmsg
 import fedmsg.meta
 import fedmsg.config
 log = logging.getLogger()
+
+
+class SUIDError(OSError):
+    pass
 
 class FedWatch(object):
     """Class to simplify running scripts based on fedmsg messages"""
@@ -56,6 +62,17 @@ class FedWatch(object):
         self.topics = topics
         self.script_dir = script_dir
 
+    @staticmethod
+    def __generate_setuid(uid):
+        def change_setuid():
+            try:
+                os.setuid(uid)
+            except OSError, e:
+                log.warn("setuid() call failed: {e}".format(e=e))
+                raise SUIDError()
+
+        return change_setuid
+
     def __run_scripts(self, script_dir, pargs):
         try:
             for f in sorted(os.listdir(script_dir)):
@@ -63,8 +80,21 @@ class FedWatch(object):
                 if os.access(fpath, os.X_OK) and os.path.isfile(fpath):
                     procarg=[fpath]
                     procarg.extend(pargs)
-                    log.info("Executing: {proc}".format(proc=procarg))
-                    subprocess.Popen(procarg)
+                    st = os.stat(fpath)
+                    mode = st.st_mode
+                    preexec = None
+                    if mode & stat.S_ISUID:
+                        preexec = FedWatch.__generate_setuid(st.st_uid)
+                        log.info("Executing (UID={uid}): {proc}"
+                                .format(proc=procarg,
+                                        uid=st.st_uid))
+                    else:
+                        log.info("Executing: {proc}".format(proc=procarg))
+                    try:
+                        subprocess.Popen(procarg, preexec_fn=preexec)
+                    except SUIDError, e:
+                        pass
+
         except OSError, e:
             log.error(e)
 
