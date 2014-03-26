@@ -15,14 +15,10 @@ import fedwatch
 log = logging.getLogger()
 
 def configure_logger():
-    formatter = logging.Formatter('%(asctime)s - %(module)s - %(levelname)s - %(message)s')
-    cl = logging.StreamHandler()
-    cl.setFormatter(formatter)
     formatter = logging.Formatter('%(module)s - %(levelname)s - %(message)s')
     sl = SysLogHandler('/dev/log', facility=SysLogHandler.LOG_USER)
     sl.setFormatter(formatter)
 
-    log.addHandler(cl)
     log.addHandler(sl)
     return log
 
@@ -70,12 +66,6 @@ def read_config(config_file):
         sys.exit(1)
     return confdict
 
-
-def getinfo(name):
-    def g(msg, **config):
-        return msg['msg']['commit'][name]
-    return g
-
 def termhandler(signum, frame):
     log.info("received SIGTERM. Closing shop.")
     raise SystemExit("received SIGTERM. Closing shop")
@@ -112,5 +102,4 @@ if __name__ == "__main__":
     except KeyboardInterrupt:
         log.info("finishing up")
     except Exception, e:
-        log.error("runtime exception: {e}".format(e=e))
-        raise e
+        log.exception("runtime exception: {e}".format(e=e))
