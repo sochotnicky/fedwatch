@@ -88,13 +88,15 @@ class FedWatch(object):
                 procarg=[fpath]
                 procarg.extend(pargs)
                 st = os.stat(fpath)
+                proc_owner = os.getuid()
                 mode = st.st_mode
                 preexec = None
                 if mode & stat.S_ISUID:
                     preexec = FedWatch.__generate_setuid(st.st_uid)
+                    proc_owner = st.st_uid
                 log.info("Executing (UID={uid}): {proc}"
                          .format(proc=procarg,
-                                 uid=st.st_uid))
+                                 uid=proc_owner))
                 try:
                     subprocess.Popen(procarg, preexec_fn=preexec)
                 except SUIDError, e:
