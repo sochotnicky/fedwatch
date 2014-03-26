@@ -77,23 +77,28 @@ class FedWatch(object):
         try:
             for f in sorted(os.listdir(script_dir)):
                 fpath=os.path.join(script_dir, f)
-                if os.access(fpath, os.X_OK) and os.path.isfile(fpath):
-                    procarg=[fpath]
-                    procarg.extend(pargs)
-                    st = os.stat(fpath)
-                    mode = st.st_mode
-                    preexec = None
-                    if mode & stat.S_ISUID:
-                        preexec = FedWatch.__generate_setuid(st.st_uid)
-                        log.info("Executing (UID={uid}): {proc}"
-                                .format(proc=procarg,
-                                        uid=st.st_uid))
-                    else:
-                        log.info("Executing: {proc}".format(proc=procarg))
-                    try:
-                        subprocess.Popen(procarg, preexec_fn=preexec)
-                    except SUIDError, e:
-                        pass
+                if not os.path.isfile(fpath):
+                    continue
+
+                if not os.access(fpath, os.X_OK):
+                    log.warn("Non-executable file in script dir: {fpath}"
+                            .format(fpath=fpath))
+                    continue
+
+                procarg=[fpath]
+                procarg.extend(pargs)
+                st = os.stat(fpath)
+                mode = st.st_mode
+                preexec = None
+                if mode & stat.S_ISUID:
+                    preexec = FedWatch.__generate_setuid(st.st_uid)
+                log.info("Executing (UID={uid}): {proc}"
+                         .format(proc=procarg,
+                                 uid=st.st_uid))
+                try:
+                    subprocess.Popen(procarg, preexec_fn=preexec)
+                except SUIDError, e:
+                    pass
 
         except OSError, e:
             log.error(e)
