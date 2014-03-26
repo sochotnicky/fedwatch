@@ -25,12 +25,17 @@ different topics.
 
 Real life example of configuration file:
 
-    [org.fedoraproject.prod.git.receive]
-    arg1=msg/commit/username
-    arg2=msg/commit/repo
-    arg3=msg/commit/branch
-    arg4=msg/commit/rev
-    arg5=msg/commit/summary
+    {
+        "org.fedoraproject.prod.git.receive": {
+            "args": [
+                "msg/commit/username",
+                "msg/commit/repo",
+                "msg/commit/branch",
+                "msg/commit/rev",
+                "msg/commit/summary"
+            ]
+        }
+    }
 
 Above configuration means fedwatch will be waiting for <em>git.receive</em>
 topic and will pass 6 arguments to any scripts in <em>script-dir</em>:
