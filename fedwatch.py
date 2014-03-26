@@ -75,30 +75,30 @@ class FedWatch(object):
 
         for name, endpoint, topic, msg in fedmsg.tail_messages():
             log.debug("received topic: {topic}".format(topic=topic))
-            for watchtop in self.topics:
-                if topic == watchtop:
-                    data=msg['msg']
-                    log.debug("match topic {topic}=>{data}".format(topic=topic,
-                                                                  data=data))
-                    pargs = [topic]
-                    for parg in self.topics[watchtop]['args']:
-                        if hasattr(parg, '__call__'):
-                            # run this as fedmsg.meta function
-                            pargs.append(parg(msg, **config))
-                        elif '/' in parg:
-                            # this is a dpath expression
-                            try:
-                                path, val = dpath.util.search(msg, parg, yielded=True).next()
-                                pargs.append(val)
-                            except StopIteration:
-                                log.warning("Path {parg} does not exist in {topic}. Substituting empty string"
-                                .format(parg=parg, topic=topic))
-                                pargs.append('')
-                        elif parg in msg:
-                            pargs.append(msg[parg])
-                        else:
-                            log.warning("Path {parg} does not exist in {topic}. Substituting empty string"
-                                       .format(parg=parg, topic=topic))
-                            pargs.append('')
+            if not topic in self.topics:
+                continue
 
-                    self.__run_scripts(self.script_dir, pargs)
+            log.debug("match topic {topic}=>{data}".format(topic=topic,
+                                                           data=msg['msg']))
+            pargs = [topic]
+            for parg in self.topics[topic]['args']:
+                if hasattr(parg, '__call__'):
+                    # run this as fedmsg.meta function
+                    pargs.append(parg(msg, **config))
+                elif '/' in parg:
+                    # this is a dpath expression
+                    try:
+                        path, val = dpath.util.search(msg, parg, yielded=True).next()
+                        pargs.append(val)
+                    except StopIteration:
+                        log.warning("Path {parg} does not exist in {topic}. Substituting empty string"
+                        .format(parg=parg, topic=topic))
+                        pargs.append('')
+                elif parg in msg:
+                    pargs.append(msg[parg])
+                else:
+                    log.warning("Path {parg} does not exist in {topic}. Substituting empty string"
+                               .format(parg=parg, topic=topic))
+                    pargs.append('')
+
+            self.__run_scripts(self.script_dir, pargs)
