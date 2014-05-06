@@ -86,7 +86,7 @@ class FedWatch(object):
                     continue
 
                 procarg=[fpath]
-                procarg.extend(pargs)
+                procarg.extend([str(parg) for parg in pargs])
                 st = os.stat(fpath)
                 proc_owner = os.getuid()
                 mode = st.st_mode
