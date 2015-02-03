@@ -28,8 +28,6 @@ import logging
 import stat
 import subprocess
 
-import dpath
-import dpath.util
 import fedmsg
 import fedmsg.meta
 import fedmsg.config
@@ -118,14 +116,29 @@ class FedWatch(object):
             log.debug("match topic {topic}=>{data}".format(topic=topic,
                                                            data=msg['msg']))
             pargs = [topic]
+            
+            def slop_dicter(msg, parg):
+                l = parg.split('/')
+                i = len(l)
+                if i == 2:
+                    return parg, msg[l[0]][l[1]]
+                elif i == 3:
+                    return parg, msg[l[0]][l[1]][l[2]]
+                elif i == 4:
+                    return parg, msg[l[0]][l[1]][l[2]][l[3]]
+                elif i == 5:
+                    return parg, msg[l[0]][l[1]][l[2]][l[3]][l[4]]
+                else:
+                    log.warning("Message depth of {depth} not supported".format(depth=i))
+
+                
             for parg in self.topics[topic]['args']:
                 if hasattr(parg, '__call__'):
                     # run this as fedmsg.meta function
                     pargs.append(parg(msg, **config))
                 elif '/' in parg:
-                    # this is a dpath expression
                     try:
-                        path, val = dpath.util.search(msg, parg, yielded=True).next()
+                        path, val = slop_dicter(msg, parg)
                         pargs.append(val)
                     except StopIteration:
                         log.warning("Path {parg} does not exist in {topic}. Substituting empty string"
