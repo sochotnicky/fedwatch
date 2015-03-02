@@ -35,6 +35,7 @@ import fedmsg.meta
 import fedmsg.config
 log = logging.getLogger()
 
+CONFIG_FILE_EXTS = ['ini', 'conf', 'cfg', 'yml']
 
 class SUIDError(OSError):
     pass
@@ -81,8 +82,9 @@ class FedWatch(object):
                     continue
 
                 if not os.access(fpath, os.X_OK):
-                    log.warn("Non-executable file in script dir: {fpath}"
-                            .format(fpath=fpath))
+                    if os.path.splitext(fpath)[-1] not in CONFIG_FILE_EXTS:
+                        log.warn("Non-executable file in script dir: {fpath}"
+                                .format(fpath=fpath))
                     continue
 
                 procarg=[fpath]
