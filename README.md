@@ -6,6 +6,11 @@ Library for watching fedmsg messages and running arbitrary scripts in a nice way
 Think of fedwatch as simple converter from fedmsg json messages into shell
 arguments for scripts. 
 
+fedwatch is like inetd for fedmsg - it listens for incoming fedmsg
+traffic and spawns user-supplied executables for handling matching
+messages.  It improves efficiency of scripts for reacting on fedmsg
+events and makes them easier to write.
+
 Dependencies
 ============
 * fedmsg (duh!)
