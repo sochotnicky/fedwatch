@@ -78,7 +78,7 @@ if __name__ == "__main__":
     parser.add_argument('--script-dir', '-s', default='/etc/fedwatch.d',
                         help='Directory with scripts to run for fedmsg messages')
     parser.add_argument('--version', '-v', action='store_true',
-                        help='Run with debug output')
+                        help='Display version and exit')
     parser.add_argument('--debug', '-d', action='store_true',
                         help='Run with debug output')
 
