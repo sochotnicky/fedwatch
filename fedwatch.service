@@ -3,9 +3,11 @@
 [Unit]
 Description=Service for running arbitrary scripts on fedmsg events
 After=syslog.target network.target
+Documentation=https://github.com/sochotnicky/fedwatch/
 
 [Service]
 ExecStart=/usr/bin/fedwatch
+Restart=on-failure
 
 [Install]
 WantedBy=multi-user.target
