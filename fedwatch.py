@@ -88,7 +88,12 @@ class FedWatch(object):
                     continue
 
                 procarg=[fpath]
-                procarg.extend([str(parg) for parg in pargs])
+                for parg in pargs:
+                    if isinstance(parg, unicode):
+                        procarg.append(parg.encode('utf-8'))
+                    else:
+                        procarg.append(str(parg))
+
                 st = os.stat(fpath)
                 proc_owner = os.getuid()
                 mode = st.st_mode
