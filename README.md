@@ -53,5 +53,5 @@ topic and will pass 6 arguments to any scripts in <em>script-dir</em>:
   6. commit summary (1st line of git commit)
 
 To see list of possible topics and data included in them see
-http://fedmsg.readthedocs.org/en/latest/topics/
+https://fedora-fedmsg.readthedocs.io/
 
