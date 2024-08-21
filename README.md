@@ -1,3 +1,8 @@
+Abadnoned
+---------
+
+Fedmsg is no longer being used. THis project is abandoned
+
 fedwatch
 ========
 
